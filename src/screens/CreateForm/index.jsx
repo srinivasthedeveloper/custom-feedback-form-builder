@@ -153,7 +153,9 @@ const CreateForm = () => {
           <Flex
             className={styles.fieldContainer}
             onClick={() => {
-              setFields([...fields, { id: uuidv4(), index: (fields?.length || 0) + 1, type: field.type }]);
+              if (fields.length >= 7) {
+                setFields([...fields, { id: uuidv4(), index: (fields?.length || 0) + 1, type: field.type }]);
+              }
             }}
           >
             <Image src={field.icon} />

@@ -24,7 +24,15 @@ const Login = () => {
             e.preventDefault();
             form.validate();
             if (form.isValid()) {
-              navigate('/dashboard');
+              if (form.values.username === 'admin' && form.values.password === 'admin') {
+                navigate('/dashboard');
+                localStorage.setItem('isAdminLogin', 'true');
+              } else if (form.values.username === 'user' && form.values.password === 'user') {
+                navigate('/dashboard');
+                localStorage.setItem('isUserLogin', 'true');
+              } else {
+                alert('Invalid Username or Password');
+              }
             }
           }}
           style={{ display: 'flex', gap: '10px', flexDirection: 'column' }}
@@ -47,6 +55,20 @@ const Login = () => {
           />
           <Button type="submit" fullWidth>
             Login
+          </Button>
+          <Button
+            onClick={() => {
+              form.setValues({ username: 'admin', password: 'admin' });
+            }}
+          >
+            Login as Admin
+          </Button>
+          <Button
+            onClick={() => {
+              form.setValues({ username: 'user', password: 'user' });
+            }}
+          >
+            Login as User
           </Button>
         </form>
       </Card>
