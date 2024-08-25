@@ -1,12 +1,13 @@
 const urlRoutes = {
   login: '/',
-  home: '/home',
   dashboard: '/dashboard',
   newForm: '/new-form/:id',
   formEditor: '/form-editor',
   formDetails: '/form/:id',
 
-  userDashboard: '/user-dashboard',
+  userDashboard: '/home',
+  userAbout: '/about',
+  userProject: '/project',
 };
 
 export { urlRoutes };

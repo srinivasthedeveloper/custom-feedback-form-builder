@@ -4,6 +4,9 @@ import { CreateForm } from './screens/CreateForm';
 import { Dashboard } from './screens/Dashboard';
 import { FormDetail } from './screens/FomDetail';
 import { Login } from './screens/Login';
+import { UserAbout } from './screens/UserScreens/About';
+import { UserHome } from './screens/UserScreens/Home';
+import { UserProject } from './screens/UserScreens/Project';
 import { urlRoutes } from './utils/Routes';
 
 function App() {
@@ -43,7 +46,23 @@ function App() {
           path={urlRoutes.userDashboard}
           element={
             <ProtectedRoute authKey={'isUserLogin'}>
-              <h1>hello world</h1>
+              <UserHome />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={urlRoutes.userAbout}
+          element={
+            <ProtectedRoute authKey={'isUserLogin'}>
+              <UserAbout />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={urlRoutes.userProject}
+          element={
+            <ProtectedRoute authKey={'isUserLogin'}>
+              <UserProject />
             </ProtectedRoute>
           }
         />

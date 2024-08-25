@@ -53,6 +53,7 @@ import whiteEdit from '../../assets/whiteEdit.svg';
 import { AdminHeader } from '../../components/AdminHeader';
 import { FormNameEditorModal } from '../../components/FormNameEditorModal';
 import { useFirestore } from '../../hooks/useFirestore';
+import { urlRoutes } from '../../utils/Routes';
 import styles from './index.module.css';
 
 const CreateForm = () => {
@@ -153,8 +154,10 @@ const CreateForm = () => {
           <Flex
             className={styles.fieldContainer}
             onClick={() => {
-              if (fields.length >= 7) {
+              if (fields.length < 7) {
                 setFields([...fields, { id: uuidv4(), index: (fields?.length || 0) + 1, type: field.type }]);
+              } else {
+                alert('You can add only 7 fields');
               }
             }}
           >
@@ -321,20 +324,44 @@ const CreateForm = () => {
     }
   };
 
-  const handleUpdate = async () => {
+  const handleRename = async () => {
+    if (formName === '') {
+      alert('Please enter a form name');
+      return;
+    }
+    await updateDocument(formId, { ...formData, name: formName });
+    setModalOpen(false);
+  };
+
+  const handleUpdate = async (isPublished = false) => {
+    if (fields.length === 0) {
+      alert('Please add fields to the form');
+    }
     const data = {
       ...formData,
       fields,
       conditions: conditionDataForm.getValues(),
       name: formName || formData?.name,
+      isPublished: !!isPublished,
     };
     await updateDocument(formId, data);
-    getFormData();
+    if (!!isPublished) {
+      navigate(urlRoutes.dashboard);
+    } else {
+      getFormData();
+    }
   };
 
   return (
     <section>
-      <AdminHeader onSave={handleUpdate} />
+      <AdminHeader
+        onSave={() => {
+          handleUpdate();
+        }}
+        onPublish={() => {
+          handleUpdate(true);
+        }}
+      />
       <main className={styles.formEditContainer}>
         <Flex className={styles.previewContainer}>
           <Card shadow="md" padding="0px" className={styles.previewCard}>
@@ -515,7 +542,7 @@ const CreateForm = () => {
         }}
         isModalOpen={isModalOpen}
         handleSubmit={() => {
-          handleUpdate();
+          handleRename();
           setModalOpen(false);
         }}
         handleCancel={() => {

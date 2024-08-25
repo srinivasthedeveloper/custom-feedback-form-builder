@@ -9,7 +9,7 @@ const FormNameEditorModal = ({
   handleCancel = () => {},
   isError = false,
 }) => (
-  <Modal centered opened={isModalOpen} withCloseButton={false} title={title + ' Feedback Form'}>
+  <Modal onClose={handleCancel} centered opened={isModalOpen} withCloseButton={false} title={title + ' Feedback Form'}>
     <div>
       <TextInput
         placeholder="Enter Form Name"

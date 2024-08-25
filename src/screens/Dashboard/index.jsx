@@ -7,6 +7,7 @@ import PlusIcon from '../../assets/plusIcon.svg';
 import { AdminHeader } from '../../components/AdminHeader';
 import { FormNameEditorModal } from '../../components/FormNameEditorModal';
 import { useFirestore } from '../../hooks/useFirestore';
+import { formatDate } from '../../utils/date';
 import { db } from '../../utils/firebase';
 import { urlRoutes } from '../../utils/Routes';
 import styles from './index.module.css';
@@ -50,11 +51,6 @@ const Dashboard = () => {
     await storeObject(formData);
   };
 
-  const formatDate = (date) => {
-    const formattedDate = new Date(date);
-    return `${formattedDate.getDate()}/${formattedDate.getMonth() + 1}/${formattedDate.getFullYear()}`;
-  };
-
   const NewFormCard = () => (
     <Card
       shadow="md"
@@ -92,7 +88,15 @@ const Dashboard = () => {
           <RenderLabel label="Date Published" value={formatDate(form.createdAt.toDate())} />
         </Flex>
         <Flex direction="column" gap="10px">
-          <Button className={styles.viewBtn}>View Submission</Button>
+          <Button
+            className={styles.viewBtn}
+            onClick={() => {
+              const url = urlRoutes.formDetails.replace(':id', form.id);
+              navigate(url);
+            }}
+          >
+            View Submission
+          </Button>
           <Flex className={styles.buttonContainer}>
             <Button
               className={styles.editBtn}
