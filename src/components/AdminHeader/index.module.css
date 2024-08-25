@@ -1,0 +1,15 @@
+.adminHeaderContainer {
+  padding: 10px;
+  border-bottom: 1px solid #e1e1e1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  .logoContainer {
+    display: flex;
+    align-items: center;
+  }
+  .logoImage {
+    aspect-ratio: 1;
+    width: 40px;
+  }
+}

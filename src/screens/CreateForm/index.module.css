@@ -1,0 +1,54 @@
+.formEditContainer {
+  display: flex;
+  .previewContainer {
+    flex: 1;
+    justify-content: center;
+    .previewCard {
+      width: 50%;
+      height: clamp(400px, 100%, 80vh);
+      margin: 20px 0;
+      overflow-y: auto;
+      .previewHeader {
+        background: #5578f4;
+        color: white;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        .previewTitle {
+          font-size: 1rem;
+          font-weight: 600;
+          width: 70%;
+          display: flex;
+        }
+      }
+    }
+    .emptyPreview {
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      .emptyTitle {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #5c5858;
+      }
+    }
+  }
+  .availableFields {
+    padding: 10px;
+    justify-content: space-between;
+    align-items: center;
+    .fieldContainer {
+      flex: 1;
+      gap: 10px;
+      cursor: pointer;
+    }
+  }
+  .conditionContainer {
+    gap: 10px;
+    .textInputFieldBorder {
+      border: none;
+      border-bottom: 1px solid #000;
+    }
+  }
+}
