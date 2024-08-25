@@ -1,18 +1,16 @@
-import { Card, Image, Text } from '@mantine/core';
+import { Button, Card, Flex, Image, Modal, Text, TextInput } from '@mantine/core';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PlusIcon from '../assets/plusIcon.svg';
+import { AdminHeader } from '../components/AdminHeader';
 import { urlRoutes } from '../utils/Routes';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [isModalOpen, setModalOpen] = useState(false);
   return (
     <section>
-      <header style={{ padding: '10px', boxShadow: '0px 1px 10px #888' }}>
-        <Image src="" />
-        <Text size="xl" style={{ fontWeight: '500' }}>
-          USER Feedback
-        </Text>
-      </header>
+      <AdminHeader />
       <main style={{ padding: '30px' }}>
         <Card
           shadow="md"
@@ -28,7 +26,7 @@ const Dashboard = () => {
             cursor: 'pointer',
           }}
           onClick={() => {
-            navigate(urlRoutes.newForm);
+            setModalOpen(true);
           }}
         >
           <Image src={PlusIcon} style={{ aspectRatio: '1', width: '40px' }} alt="+" />
@@ -36,6 +34,29 @@ const Dashboard = () => {
             New Form
           </Text>
         </Card>
+        <Modal centered opened={isModalOpen} title="Create Feedback Form">
+          <div>
+            <TextInput placeholder="Enter Form Name" />
+            <Flex>
+              <Button
+                variant="transparent"
+                onClick={() => {
+                  setModalOpen(false);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="transparent"
+                onClick={() => {
+                  navigate(urlRoutes.newForm);
+                }}
+              >
+                Create
+              </Button>
+            </Flex>
+          </div>
+        </Modal>
       </main>
     </section>
   );

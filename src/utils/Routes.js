@@ -1,6 +1,6 @@
 const urlRoutes = {
-  home: '/',
-  login: '/login',
+  login: '/',
+  home: '/home',
   dashboard: '/dashboard',
   newForm: '/new-form',
   formEditor: '/form-editor',
