@@ -2,7 +2,7 @@ import { Button, Flex, Image, Text } from '@mantine/core';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const AdminHeader = () => {
+const AdminHeader = ({ title = 'USER Feedback', onPublish = () => {}, onSave = () => {} }) => {
   const navigate = useNavigate();
   return (
     <header
@@ -17,14 +17,20 @@ const AdminHeader = () => {
       <Flex>
         <Image src="" />
         <Text size="xl" style={{ fontWeight: '500' }}>
-          USER Feedback
+          {title}
         </Text>
       </Flex>
       <Flex gap="lg">
-        <Button>Save</Button>
         <Button
           onClick={() => {
-            navigate('/form/1');
+            onSave();
+          }}
+        >
+          Save
+        </Button>
+        <Button
+          onClick={() => {
+            onPublish();
           }}
         >
           Publish

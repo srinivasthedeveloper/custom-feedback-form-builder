@@ -23,14 +23,29 @@ import {
   TextInput,
 } from '@mantine/core';
 import { Form, useForm } from '@mantine/form';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { AdminHeader } from '../components/AdminHeader';
+import { useFirestore } from '../hooks/useFirestore';
 
 const CreateForm = () => {
   const [editField, setEditField] = useState(null);
-  const isRadioInput = false;
   const [fields, setFields] = useState([]);
+  const [formData, setFormData] = useState();
+  const { getDocument, updateDocument } = useFirestore('forms');
+  const formId = useParams().id;
+
+  const getFormData = async () => {
+    if (!formId) return;
+    const form = await getDocument(formId);
+    setFormData(form);
+    setFields(form?.fields || []);
+  };
+
+  useEffect(() => {
+    getFormData();
+  }, []);
 
   const additionalInfoForm = useForm({
     mode: 'uncontrolled',
@@ -39,9 +54,9 @@ const CreateForm = () => {
       labelText: '',
       errorMessage: '',
       isRequired: false,
-      option1: '',
-      option2: '',
-      option3: '',
+      option1: 'Option 1',
+      option2: 'Option 2',
+      option3: 'Option 3',
     },
   });
 
@@ -76,9 +91,21 @@ const CreateForm = () => {
         return (
           <Flex direction="column">
             <InputLabel required={field?.isRequired}>{field?.label}</InputLabel>
-            <Radio name={field?.id} value={field?.options?.[0]} label={field?.options?.[0] || 'Option 1'} />
-            <Radio name={field?.id} value={field?.options?.[1]} label={field?.options?.[1] || 'Option 2'} />
-            <Radio name={field?.id} value={field?.options?.[2]} label={field?.options?.[2] || 'Option 3'} />
+            <Radio
+              name={field?.id}
+              value={field?.options?.[0] || 'Option 1'}
+              label={field?.options?.[0] || 'Option 1'}
+            />
+            <Radio
+              name={field?.id}
+              value={field?.options?.[1] || 'Option 2'}
+              label={field?.options?.[1] || 'Option 2'}
+            />
+            <Radio
+              name={field?.id}
+              value={field?.options?.[2] || 'Option 3'}
+              label={field?.options?.[2] || 'Option 3'}
+            />
           </Flex>
         );
       case 'categories':
@@ -135,7 +162,16 @@ const CreateForm = () => {
 
   return (
     <section>
-      <AdminHeader />
+      <AdminHeader
+        onSave={async () => {
+          const data = {
+            ...formData,
+            fields,
+          };
+          const response = await updateDocument(formId, data);
+          console.log(response);
+        }}
+      />
       <main style={{ display: 'flex' }}>
         <Flex style={{ flex: '1', justifyContent: 'center' }}>
           <Card
@@ -145,7 +181,7 @@ const CreateForm = () => {
           >
             <Flex style={{ background: '#5578F4', color: 'white', padding: '10px' }}>
               <Image />
-              <Text>Create Form</Text>
+              <Text>{formData?.name}</Text>
               <Image />
             </Flex>
             {fields.length > 0 ? (
@@ -160,10 +196,12 @@ const CreateForm = () => {
                             setEditField(item);
                             additionalInfoForm.setFieldValue('labelText', item.label);
                             additionalInfoForm.setFieldValue('errorMessage', item.errorMessage);
-                            additionalInfoForm.setFieldValue('isRequired', item.isRequired);
-                            additionalInfoForm.setFieldValue('option1', item.options?.[0]);
-                            additionalInfoForm.setFieldValue('option2', item.options?.[1]);
-                            additionalInfoForm.setFieldValue('option3', item.options?.[2]);
+                            additionalInfoForm.setFieldValue('isRequired', !!item.isRequired);
+                            if (item?.type === 'radio' || item?.type === 'categories') {
+                              additionalInfoForm.setFieldValue('option1', item.options?.[0]);
+                              additionalInfoForm.setFieldValue('option2', item.options?.[1]);
+                              additionalInfoForm.setFieldValue('option3', item.options?.[2]);
+                            }
                           }}
                         >
                           Edit
@@ -197,10 +235,18 @@ const CreateForm = () => {
                     setEditField(null);
                     const newFieldData = {
                       ...editField,
-                      label: formData.labelText,
-                      errorMessage: formData.errorMessage,
-                      isRequired: formData.isRequired,
-                      options: [formData.option1, formData.option2, formData.option3],
+                      label: formData.labelText || `Please Enter ${editField.type}`,
+                      errorMessage: formData.errorMessage || 'Please enter a valid value',
+                      isRequired: !!formData.isRequired,
+                      ...(editField?.type === 'radio' || editField?.type === 'categories'
+                        ? {
+                            options: [
+                              formData.option1 || 'Option 1',
+                              formData.option2 || 'Option 2',
+                              formData.option3 || 'Option 3',
+                            ],
+                          }
+                        : {}),
                     };
                     setFields(fields.map((field) => (field.id === editField.id ? newFieldData : field)));
                     additionalInfoForm.reset();
