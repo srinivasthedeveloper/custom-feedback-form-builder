@@ -5,6 +5,8 @@ const urlRoutes = {
   newForm: '/new-form/:id',
   formEditor: '/form-editor',
   formDetails: '/form/:id',
+
+  userDashboard: '/user-dashboard',
 };
 
 export { urlRoutes };

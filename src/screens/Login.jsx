@@ -1,6 +1,7 @@
 import { Button, Card, Flex, TextInput } from '@mantine/core';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { useNavigate } from 'react-router-dom';
+import { urlRoutes } from '../utils/Routes';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -24,12 +25,16 @@ const Login = () => {
             e.preventDefault();
             form.validate();
             if (form.isValid()) {
-              if (form.values.username === 'admin' && form.values.password === 'admin') {
-                navigate('/dashboard');
+              const username = form.getValues().username;
+              const password = form.getValues().password;
+              if (username === 'admin' && password === 'admin') {
+                navigate(urlRoutes.dashboard);
                 localStorage.setItem('isAdminLogin', 'true');
-              } else if (form.values.username === 'user' && form.values.password === 'user') {
-                navigate('/dashboard');
+                localStorage.setItem('isUserLogin', 'false');
+              } else if (username === 'user' && password === 'user') {
+                navigate(urlRoutes.userDashboard);
                 localStorage.setItem('isUserLogin', 'true');
+                localStorage.setItem('isAdminLogin', 'false');
               } else {
                 alert('Invalid Username or Password');
               }
@@ -56,20 +61,22 @@ const Login = () => {
           <Button type="submit" fullWidth>
             Login
           </Button>
-          <Button
-            onClick={() => {
-              form.setValues({ username: 'admin', password: 'admin' });
-            }}
-          >
-            Login as Admin
-          </Button>
-          <Button
-            onClick={() => {
-              form.setValues({ username: 'user', password: 'user' });
-            }}
-          >
-            Login as User
-          </Button>
+          <Flex align="center" justify="space-evenly">
+            <Button
+              onClick={() => {
+                form.setValues({ username: 'admin', password: 'admin' });
+              }}
+            >
+              Login as Admin
+            </Button>
+            <Button
+              onClick={() => {
+                form.setValues({ username: 'user', password: 'user' });
+              }}
+            >
+              Login as User
+            </Button>
+          </Flex>
         </form>
       </Card>
     </Flex>
