@@ -14,6 +14,7 @@ import {
   Image,
   Input,
   InputLabel,
+  LoadingOverlay,
   Radio,
   Rating,
   SegmentedControl,
@@ -63,7 +64,7 @@ const CreateForm = () => {
   const [isError, setIsError] = useState(false);
   const [formName, setFormName] = useState('');
   const [formData, setFormData] = useState();
-  const { getDocument, updateDocument } = useFirestore('forms');
+  const { getDocument, updateDocument, loading } = useFirestore('forms');
   const formId = useParams().id;
   const navigate = useNavigate();
 
@@ -354,6 +355,10 @@ const CreateForm = () => {
       getFormData();
     }
   };
+
+  if (loading) {
+    return <LoadingOverlay visible />;
+  }
 
   return (
     <section>

@@ -3,6 +3,7 @@ import {
   Flex,
   Image,
   InputLabel,
+  LoadingOverlay,
   Modal,
   Radio,
   Rating,
@@ -29,8 +30,8 @@ import smileOutlined from '../../assets/smileOutline.svg';
 import { useFirestore } from '../../hooks/useFirestore';
 
 const UserFormModal = () => {
-  const { getAllDocuments } = useFirestore('forms');
-  const { addDocument } = useFirestore('forms-responses');
+  const { getAllDocuments, loading: formLoading } = useFirestore('forms');
+  const { addDocument, loading: responseLoading } = useFirestore('forms-responses');
   const [fields, setFields] = useState([]);
   const [validationSchema, setValidationSchema] = useState({});
   const [isModalOpen, setModalOpen] = useState(false);
@@ -257,18 +258,32 @@ const UserFormModal = () => {
     }
   };
 
+  if (formLoading || responseLoading) {
+    return <LoadingOverlay visible />;
+  }
+
   return (
     <Modal opened={isModalOpen} withCloseButton={false} centered size="lg" onClose={handleClose}>
       <Text size="lg">{formDetails?.name}</Text>
       <Form onSubmit={handleSubmit} form={userForm}>
-        {fields?.map((field) => (
-          <>
-            {RenderField({ field })}
-            {userForm.errors[field.id] && <div style={{ color: 'red' }}>{userForm.errors[field.id]}</div>}
-          </>
-        ))}
-        <Button type="submit">Submit</Button>
-        <Button onClick={handleClose}>Cancel</Button>
+        <Flex justify="space-evenly" direction="column" style={{ padding: '20px 0', gap: '20px' }}>
+          {fields?.map((field) => (
+            <>
+              {RenderField({ field })}
+              {userForm.errors[field.id] && (
+                <Text size="sm" style={{ color: 'red' }}>
+                  {userForm.errors[field.id]}
+                </Text>
+              )}
+            </>
+          ))}
+        </Flex>
+        <Flex justify="flex-end" align="center" gap="lg">
+          <Button color="red" onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button type="submit">Submit</Button>
+        </Flex>
       </Form>
     </Modal>
   );

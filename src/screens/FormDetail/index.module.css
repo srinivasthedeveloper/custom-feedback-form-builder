@@ -1,0 +1,17 @@
+.formDetailsContainer {
+  .formCard {
+    margin: 20px;
+    padding: 0 0 20px;
+    .cardHeader {
+      background: #5578f4;
+      color: white;
+      padding: 10px;
+      justify-content: space-between;
+      align-items: center;
+      .title {
+        align-items: center;
+        gap: 10px;
+      }
+    }
+  }
+}

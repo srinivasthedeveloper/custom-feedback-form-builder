@@ -1,13 +1,12 @@
-import { Button, Card, Flex, Image, Text } from '@mantine/core';
+import { LoadingOverlay } from '@mantine/core';
 import { addDoc, collection, Timestamp } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import FormIcon from '../../assets/formIcon.svg';
-import PlusIcon from '../../assets/plusIcon.svg';
 import { AdminHeader } from '../../components/AdminHeader';
 import { FormNameEditorModal } from '../../components/FormNameEditorModal';
+import { NewFormCard } from '../../components/NewFormCard';
+import { RenderFormCards } from '../../components/RenderFormCards';
 import { useFirestore } from '../../hooks/useFirestore';
-import { formatDate } from '../../utils/date';
 import { db } from '../../utils/firebase';
 import { urlRoutes } from '../../utils/Routes';
 import styles from './index.module.css';
@@ -17,12 +16,31 @@ const Dashboard = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [formName, setFormName] = useState('');
   const [isError, setIsError] = useState(false);
-  const { getAllDocuments, deleteDocument } = useFirestore('forms');
+  const { getAllDocuments, deleteDocument, loading } = useFirestore('forms');
   const [forms, setForms] = useState([]);
 
   const getAllForms = async () => {
     const allForms = await getAllDocuments();
     setForms(allForms);
+  };
+
+  const handleView = (formId) => {
+    const url = urlRoutes.formDetails.replace(':id', formId);
+    navigate(url);
+  };
+
+  const handleEdit = (formId) => {
+    const url = urlRoutes.newForm.replace(':id', formId);
+    navigate(url);
+  };
+
+  const handleDelete = (formId) => {
+    deleteDocument(formId);
+    getAllForms();
+  };
+
+  const handleCreate = () => {
+    setModalOpen(true);
   };
 
   useEffect(() => {
@@ -51,84 +69,23 @@ const Dashboard = () => {
     await storeObject(formData);
   };
 
-  const NewFormCard = () => (
-    <Card
-      shadow="md"
-      padding="md"
-      className={styles.formCard}
-      style={{ justifyContent: 'center' }}
-      onClick={() => {
-        setModalOpen(true);
-      }}
-    >
-      <Image src={PlusIcon} className={styles.plusIcon} alt="+" />
-      <Text align="center" size="lg" style={{ fontWeight: '500' }}>
-        New Form
-      </Text>
-    </Card>
-  );
-
-  const RenderLabel = ({ label, value }) => (
-    <Flex className={styles.labelContainer}>
-      <Text className={styles.label}>{label}</Text>
-      <Text className={styles.value}>{value}</Text>
-    </Flex>
-  );
-
-  const RenderCards = ({ form }) => (
-    <Card shadow="md" className={styles.formCard}>
-      <Flex className={styles.formCardHeader}>
-        <Image src={FormIcon} />
-      </Flex>
-      <Flex direction="column" className={styles.formBody}>
-        <Text className={styles.title}>{form.name}</Text>
-        <Flex direction="column">
-          <RenderLabel label="Submitted" value="0" />
-          <RenderLabel label="Viewed" value="0" />
-          <RenderLabel label="Date Published" value={formatDate(form.createdAt.toDate())} />
-        </Flex>
-        <Flex direction="column" gap="10px">
-          <Button
-            className={styles.viewBtn}
-            onClick={() => {
-              const url = urlRoutes.formDetails.replace(':id', form.id);
-              navigate(url);
-            }}
-          >
-            View Submission
-          </Button>
-          <Flex className={styles.buttonContainer}>
-            <Button
-              className={styles.editBtn}
-              onClick={() => {
-                const url = urlRoutes.newForm.replace(':id', form.id);
-                navigate(url);
-              }}
-            >
-              Edit
-            </Button>
-            <Button
-              className={styles.deleteBtn}
-              onClick={() => {
-                deleteDocument(form.id);
-                getAllForms();
-              }}
-            >
-              Delete
-            </Button>
-          </Flex>
-        </Flex>
-      </Flex>
-    </Card>
-  );
+  if (loading) {
+    return <LoadingOverlay visible />;
+  }
 
   return (
     <section>
       <AdminHeader />
       <main className={styles.dashboardContainer}>
-        <NewFormCard />
+        <NewFormCard handleClick={handleCreate} />
         {forms.map((form) => (
-          <RenderCards key={form.id} form={form} />
+          <RenderFormCards
+            key={form.id}
+            form={form}
+            handleView={handleView}
+            handleEdit={handleEdit}
+            handleDelete={handleDelete}
+          />
         ))}
         <FormNameEditorModal
           formName={formName}

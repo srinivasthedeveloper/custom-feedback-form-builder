@@ -2,7 +2,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import { CreateForm } from './screens/CreateForm';
 import { Dashboard } from './screens/Dashboard';
-import { FormDetail } from './screens/FomDetail';
+import { FormDetail } from './screens/FormDetail';
 import { Login } from './screens/Login';
 import { UserAbout } from './screens/UserScreens/About';
 import { UserHome } from './screens/UserScreens/Home';

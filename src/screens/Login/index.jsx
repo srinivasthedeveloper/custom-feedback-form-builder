@@ -1,7 +1,8 @@
 import { Button, Card, Flex, TextInput } from '@mantine/core';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { useNavigate } from 'react-router-dom';
-import { urlRoutes } from '../utils/Routes';
+import { urlRoutes } from '../../utils/Routes';
+import styles from './index.module.css';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -17,31 +18,31 @@ const Login = () => {
       password: isNotEmpty('Password is required'),
     },
   });
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    form.validate();
+    if (form.isValid()) {
+      const username = form.getValues().username;
+      const password = form.getValues().password;
+      if (username === 'admin' && password === 'admin') {
+        navigate(urlRoutes.dashboard);
+        localStorage.setItem('isAdminLogin', 'true');
+        localStorage.setItem('isUserLogin', 'false');
+      } else if (username === 'user' && password === 'user') {
+        navigate(urlRoutes.userDashboard);
+        localStorage.setItem('isUserLogin', 'true');
+        localStorage.setItem('isAdminLogin', 'false');
+      } else {
+        alert('Invalid Username or Password');
+      }
+    }
+  };
+
   return (
-    <Flex align={'center'} justify={'center'} fullWidth style={{ height: '100vh' }}>
-      <Card shadow="xs" padding="lg" style={{ width: 400, margin: 'auto' }}>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            form.validate();
-            if (form.isValid()) {
-              const username = form.getValues().username;
-              const password = form.getValues().password;
-              if (username === 'admin' && password === 'admin') {
-                navigate(urlRoutes.dashboard);
-                localStorage.setItem('isAdminLogin', 'true');
-                localStorage.setItem('isUserLogin', 'false');
-              } else if (username === 'user' && password === 'user') {
-                navigate(urlRoutes.userDashboard);
-                localStorage.setItem('isUserLogin', 'true');
-                localStorage.setItem('isAdminLogin', 'false');
-              } else {
-                alert('Invalid Username or Password');
-              }
-            }
-          }}
-          style={{ display: 'flex', gap: '10px', flexDirection: 'column' }}
-        >
+    <Flex className={styles.loginContainer}>
+      <Card shadow="xs" className={styles.loginCard}>
+        <form onSubmit={handleLogin} className={styles.loginForm}>
           <TextInput
             {...form.getInputProps('username')}
             key={form.key('username')}
@@ -58,23 +59,24 @@ const Login = () => {
             label="Password"
             withAsterisk
           />
-          <Button type="submit" fullWidth>
+          <Button color="purple" type="submit" fullWidth>
             Login
           </Button>
           <Flex align="center" justify="space-evenly">
             <Button
+              color="#2E7D32"
               onClick={() => {
                 form.setValues({ username: 'admin', password: 'admin' });
               }}
             >
-              Login as Admin
+              Enter Admin Credentials
             </Button>
             <Button
               onClick={() => {
                 form.setValues({ username: 'user', password: 'user' });
               }}
             >
-              Login as User
+              Enter User Credentials
             </Button>
           </Flex>
         </form>

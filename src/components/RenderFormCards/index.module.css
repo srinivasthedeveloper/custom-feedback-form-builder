@@ -1,19 +1,11 @@
-.dashboardContainer {
-  padding: 30px;
+.renderFormCardContainer {
+  width: 250px;
+  aspect-ratio: 1.2/1.6;
   display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
-  overflow-y: scroll;
-
-  .formCard {
-    width: 250px;
-    aspect-ratio: 1.2/1.6;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    flex-direction: column;
-    padding: 0;
-  }
+  align-items: center;
+  gap: 20px;
+  flex-direction: column;
+  padding: 0;
 
   .formCardHeader {
     background: #f5d563;
