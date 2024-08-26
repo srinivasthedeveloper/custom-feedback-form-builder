@@ -182,6 +182,7 @@ const CreateForm = () => {
               {...conditionDataForm.getInputProps('urlEnabled')}
               key={conditionDataForm.key('urlEnabled')}
               disabled={!conditionDataForm.getValues()?.url}
+              defaultChecked={conditionDataForm.getValues()?.urlEnabled}
               labelPosition="left"
               label="Show based on URL conditions"
             />
@@ -197,6 +198,7 @@ const CreateForm = () => {
             {...conditionDataForm.getInputProps('dateEnabled')}
             key={conditionDataForm.key('dateEnabled')}
             disabled={!conditionDataForm.getValues()?.date}
+            defaultChecked={conditionDataForm.getValues()?.dateEnabled}
             labelPosition="left"
             label="Show on a specific date"
           />
@@ -205,6 +207,7 @@ const CreateForm = () => {
             {...conditionDataForm.getInputProps('timeEnabled')}
             key={conditionDataForm.key('timeEnabled')}
             disabled={!conditionDataForm.getValues()?.time}
+            defaultChecked={conditionDataForm.getValues()?.timeEnabled}
             labelPosition="left"
             label="Show on a specific time"
           />
@@ -484,6 +487,7 @@ const CreateForm = () => {
                       label="Required"
                       {...additionalInfoForm.getInputProps('isRequired')}
                       key={additionalInfoForm.key('isRequired')}
+                      defaultChecked={additionalInfoForm.getValues()?.isRequired}
                     />
                     {editField?.type === 'radio' || editField?.type == 'categories' ? (
                       <Flex direction="column">

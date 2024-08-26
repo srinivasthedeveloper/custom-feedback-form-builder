@@ -13,7 +13,8 @@ import {
 } from '@mantine/core';
 import { Form, useForm } from '@mantine/form';
 import { Timestamp } from 'firebase/firestore';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import * as Yup from 'yup';
 import AngryFilled from '../../assets/angryFilled.svg';
 import AngryOutlined from '../../assets/angryOutline.svg';
@@ -34,6 +35,8 @@ const UserFormModal = () => {
   const [validationSchema, setValidationSchema] = useState({});
   const [isModalOpen, setModalOpen] = useState(false);
   const [formDetails, setFormDetails] = useState({});
+  const [filteredForms, setFilteredForms] = useState([]);
+  const pathname = useLocation()?.pathname;
 
   function getValidationSchema(fields) {
     const schemaFields = {};
@@ -56,12 +59,9 @@ const UserFormModal = () => {
     if (typeof previousForms === 'string') {
       previousForms = JSON.parse(previousForms);
     }
-    const filteredForms = getPublishedForms.filter((form) => !previousForms.includes(form.id));
-    if (filteredForms.length === 0) return;
-    setFormDetails(filteredForms[0]);
-    setFields(filteredForms[0]?.fields);
-    setValidationSchema(getValidationSchema(filteredForms[0]?.fields));
-    setModalOpen(true);
+    const formsFiltered = getPublishedForms.filter((form) => !previousForms.includes(form.id));
+    if (formsFiltered.length === 0) return;
+    setFilteredForms(formsFiltered);
   };
 
   const userForm = useForm({
@@ -82,9 +82,50 @@ const UserFormModal = () => {
     },
   });
 
-  useState(() => {
+  const handlePathChange = () => {
+    if (filteredForms.length === 0) return;
+    let visibleForm = null;
+
+    // Get current date and time
+    const currentDate = new Date().toISOString().split('T')[0];
+    const currentTime = new Date().toTimeString().slice(0, 5); // "HH:mm" format
+
+    // Filter forms that satisfy all enabled conditions
+    const formsWithAllConditions = filteredForms.filter((form) => {
+      const { urlEnabled, dateEnabled, timeEnabled, url, date, time } = form?.conditions || {};
+
+      const isUrlMatch = urlEnabled ? url?.includes(pathname) : true;
+      const isDateMatch = dateEnabled ? date?.includes(currentDate) : true;
+      const isTimeMatch = timeEnabled ? time?.includes(currentTime) : true;
+
+      return isUrlMatch && isDateMatch && isTimeMatch;
+    });
+
+    // Check forms without any conditions
+    const formsWithoutConditions = filteredForms.filter(
+      (form) => !(form?.conditions?.urlEnabled || form?.conditions?.dateEnabled || form?.conditions?.timeEnabled),
+    );
+
+    // Assign the visibleForm based on the conditions
+    if (formsWithAllConditions.length !== 0) {
+      visibleForm = formsWithAllConditions[0];
+    } else if (formsWithoutConditions.length !== 0) {
+      visibleForm = formsWithoutConditions[0];
+    }
+    if (!visibleForm) return;
+    setFormDetails(visibleForm);
+    setFields(visibleForm?.fields);
+    setValidationSchema(getValidationSchema(visibleForm?.fields));
+    setModalOpen(true);
+  };
+
+  useEffect(() => {
     getAllForms();
   }, []);
+
+  useEffect(() => {
+    handlePathChange();
+  }, [pathname, filteredForms]);
 
   const handleClose = () => {
     setModalOpen(false);
@@ -94,6 +135,7 @@ const UserFormModal = () => {
     }
     previousForms.push(formDetails?.id);
     localStorage.setItem('submittedForm', JSON.stringify(previousForms));
+    getAllForms();
   };
 
   const handleSubmit = async (values) => {
