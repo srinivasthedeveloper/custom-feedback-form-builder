@@ -67,6 +67,8 @@ function App() {
           }
         />
         {/* user routes end */}
+
+        <Route path="*" element={<Login />} />
       </Routes>
     </BrowserRouter>
   );
